@@ -1,0 +1,40 @@
+<doctype html>
+<html>
+<head>
+<title> FCG 2021 - TP5</title>
+
+<!-- estilo-->
+<link href="style.css" rel="stylesheet">
+
+<script type="text/javascript" id="includedscript" src="boxdrawer.js"></script>
+<script type="text/javascript" id="includedscript" src="lightview.js"></script>
+<script type="text/javascript" id="includedscript" src="project5.js"></script>
+<script type="text/javascript" id="includedscript" src="ejercicio.js"></script>
+<script type="text/javascript" src="objmesh.js"></script>
+
+</head>
+<body onresize="WindowResize()">
+    <!-- canvas (WebGL)-->
+    <div id="canvas-div"><canvas id="canvas"></canvas></div><div id="controls-div">
+    <!-- menu y controles-->
+    <div id="controls">
+        <div class="control-group"><canvas id="lightcontrol"></canvas><div id="lightcontrol-label">Dirección de la Luz</div></div>
+        <div class="control-group">
+            <div class="control"><input id="show-box" name="show-box" type="checkbox" onchange="DrawScene()" checked /><label for="show-box"> Mostrar caja</label></div>
+            <div class="control"><input id="show-texture" name="show-texture" type="checkbox" onchange="ShowTexture(this)" checked /><label for="show-texture"> Mostrar textura</label></div>
+            <div class="control"><input id="swap-yz" name="swap-yz" type="checkbox" onchange="SwapYZ(this)" /><label for="swap-yz"> Intercambiar Y-Z</label></div>
+            <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Calesita</label></div>
+            <div class="control"><input id="rotation-speed" type="range" min="1" max="100" value="50" disabled/></div>
+            <div class="control"><span id="shininess-label">Intensidad:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)"/></div>
+        </div>
+        <div class="control-group">
+            <div class="control">Modelo:<br/><input id="obj" type="file" onchange="LoadObj(this)" accept=".obj"/></div>
+            <div class="control">Textura:<br/><input id="texture" type="file" onchange="LoadTexture(this)" accept="image/*"/></div>
+        </div>
+        <div class="control-group">
+            <img id="texture-img" />
+        </div>
+    </div>
+    </div>
+</body>
+</html>
