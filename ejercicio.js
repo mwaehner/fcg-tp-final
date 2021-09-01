@@ -326,5 +326,6 @@ var meshFS = `
 		} 
 	
 		gl_FragColor = I * max(0.0, cos_theta) * (Kd + Ks * pow(max(0.0, cos_omega), alpha) / cos_theta);
+		//gl_FragColor = vec4(1,1,1,1);
 	}
 `;

@@ -93,7 +93,7 @@ function DrawScene()
 	var nrmTrans = [ mv[0],mv[1],mv[2], mv[4],mv[5],mv[6], mv[8],mv[9],mv[10] ];
 	meshDrawer.draw( mvp, mv, nrmTrans );
 	if ( showBox.checked ) {
-		boxDrawer.draw( mvp );
+		boxDrawer.draw( mvp, mv, nrmTrans );
 	}
 }
 
@@ -331,6 +331,7 @@ function SetShininess( param )
 	var s = Math.pow(10,exp/25);
 	document.getElementById('shininess-value').innerText = s.toFixed( s < 10 ? 2 : 0 );
 	meshDrawer.setShininess(s);
+	boxDrawer.setShininess(s);
 	DrawScene();
 }
 

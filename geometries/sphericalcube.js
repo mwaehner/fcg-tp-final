@@ -4,8 +4,8 @@
  */
 class SphericalCubeGeometry {
 
-    constructor(width = 2, height = 2, depth = 2, widthSegments = 128, heightSegments = 128, depthSegments = 128, toSphere=true){
-        let c = 256;
+    constructor(width = 1, height = 1, depth = 1, widthSegments = 128, heightSegments = 128, depthSegments = 128, toSphere=true){
+        let c = 512;
         widthSegments = c;
         heightSegments = c;
         depthSegments = c;
@@ -42,6 +42,49 @@ class SphericalCubeGeometry {
         this._buildPlane( 'x', 'z', 'y', 1, - 1, width, depth, - height, widthSegments, depthSegments ); // ny
         this._buildPlane( 'x', 'y', 'z', 1, - 1, width, height, depth, widthSegments, heightSegments ); // pz
         this._buildPlane( 'x', 'y', 'z', - 1, - 1, width, height, - depth, widthSegments, heightSegments ); // nz
+        //this._calcNormals();
+    }
+
+    _calcNormals(p1,p2,p3){
+        let u = p2.map((k, indexK) => (k-p1[indexK])) //p2-p1
+        let v = p3.map((k, indexK) => (k-p1[indexK])) //p3-p1
+        let nx = u[1]*v[2] - u[2]*v[1];
+        let ny = u[2]*v[0] - u[0]*v[2];
+        let nz = u[0]*v[1] - u[1]*v[0];
+        let n = [nx,ny,nz];
+        this.normals.push(...n);
+        this.normals.push(...n);
+        this.normals.push(...n);
+    }
+
+
+    /**
+     *     _calcNormals(){
+        let trianglesNumber = this.triangleList.length/3/3;
+        for(let i = 0; i<trianglesNumber; i+=9){
+            let p1, p2, p3;
+            p1 = [this.triangleList[i],this.triangleList[i+1], this.triangleList[i+2] ]
+            p2 = [this.triangleList[i+3],this.triangleList[i+3+1], this.triangleList[i+3+2] ]
+            p3 = [this.triangleList[i+6],this.triangleList[i+6+1], this.triangleList[i+6+2] ]
+            console.log(p1);
+            console.log(p2);
+            console.log(p3);
+
+            let u = p2.map((k, indexK) => (k-p1[indexK])) //p2-p1
+            let v = p3.map((k, indexK) => (k-p1[indexK])) //p3-p1
+            let nx = u[1]*v[2] - u[2]*v[1];
+            let ny = u[2]*v[0] - u[0]*v[2];
+            let nz = u[0]*v[1] - u[1]*v[0];
+            let n = this._normalized([nx,ny,nz])
+            this.normals.push(...n);
+        }
+        console.log(this.normals);
+    }
+     */
+
+    _normalized(v){
+        let length = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+        return [v[0]/length, v[1]/length, v[2]/length]
     }
 
     _buildPlane( u, v, w, udir, vdir, width, height, depth, gridX, gridY) {
@@ -70,35 +113,23 @@ class SphericalCubeGeometry {
                     vertices[b], vertices[b + 1], vertices[b + 2], //p2
                     vertices[d], vertices[d + 1], vertices[d + 2] //p3
                 );
-                this.normals.push(...this._normalForTriangle(vertices, a, b, d));
+                let p0 = [vertices[a], vertices[a + 1], vertices[a + 2]];
+                let p2 = [vertices[b], vertices[b + 1], vertices[b + 2]];
+                let p1 = [vertices[d], vertices[d + 1], vertices[d + 2]];
+                this._calcNormals(p0,p1,p2);
+
                 this.triangles.push(
-                    vertices[b], vertices[b + 1], vertices[b + 2],
-                    vertices[c], vertices[c + 1], vertices[c + 2],
-                    vertices[d], vertices[d + 1], vertices[d + 2]
+                    vertices[b], vertices[b + 1], vertices[b + 2], //p1
+                    vertices[c], vertices[c + 1], vertices[c + 2], //p2
+                    vertices[d], vertices[d + 1], vertices[d + 2] //p3
                 );
-                this.normals.push(...this._normalForTriangle(vertices, b, c, d));
+                p0 = [vertices[b], vertices[b + 1], vertices[b + 2]];
+                p2 = [vertices[c], vertices[c + 1], vertices[c + 2]];
+                p1 = [vertices[d], vertices[d + 1], vertices[d + 2]];
+                this._calcNormals(p0,p1,p2);
             }
 
         }
-    }
-
-    _normalForTriangle(vertices, a, b, d) {
-        let u = [
-            vertices[b] - vertices[a],
-            vertices[b + 1] - vertices[a + 1],
-            vertices[b + 2] - vertices[a + 2]
-        ];
-        let v = [
-            vertices[d] - vertices[a],
-            vertices[b + 1] - vertices[a + 1],
-            vertices[b + 2] - vertices[a + 2]
-        ];
-        const normal = [
-            u[1] * v[2] - u[2] * v[1],
-            u[2] * v[0] - u[0] * v[2],
-            u[0] * v[1] - u[1] * v[0]
-        ];
-        return normal;
     }
 
     _buildVertexList(gridX, gridY, width, height, depth, u, udir, v, vdir, w) {
