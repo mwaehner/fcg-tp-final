@@ -5,7 +5,7 @@
 class SphericalCubeGeometry {
 
     constructor(width = 1, height = 1, depth = 1, widthSegments = 128, heightSegments = 128, depthSegments = 128, toSphere=true){
-        let c = 512;
+        let c = 256;
         widthSegments = c;
         heightSegments = c;
         depthSegments = c;

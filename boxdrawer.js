@@ -94,8 +94,13 @@ var boxVS = `
 
 	void main()
 	{
-		gl_Position = mvp * vec4(pos,1);
+		
 		distance = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
+		if(distance<1.0){
+			gl_Position = mvp * vec4(normalize(pos),1);
+		} else {
+			gl_Position = mvp * vec4(pos,1);
+		}
 		vertCoord = normalize(-1.0 * mv * vec4(pos, 1));
 		normCoord = normalize(normpos);
 	}
