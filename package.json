@@ -1,0 +1,23 @@
+{
+  "name": "fcg",
+  "version": "1.0.0",
+  "description": "dependencies",
+  "main": "boxdrawer.js",
+  "dependencies": {
+    "perlin-noise-3d": "^0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mwaehner/fcg-tp-final.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mwaehner/fcg-tp-final/issues"
+  },
+  "homepage": "https://github.com/mwaehner/fcg-tp-final#readme"
+}

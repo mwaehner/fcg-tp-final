@@ -16,6 +16,8 @@ class SphericalCubeGeometry {
         this.toSphere = toSphere;
         this.noise = new perlinNoise3d();
         this._build(width, height, depth, widthSegments, heightSegments, depthSegments);
+        // TODO: (opcional) agregar nubes: crear otro conjunto de vertices de una esfera que tenga radio mayor a la esfera de acá arriba. Color: blanco / gris. Usar el 
+        // ruido que ya generamos para modificar la transparencia.
     }
 
     /** Interface */
