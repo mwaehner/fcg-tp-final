@@ -92,7 +92,7 @@ function DrawScene()
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	var nrmTrans = [ mv[0],mv[1],mv[2], mv[4],mv[5],mv[6], mv[8],mv[9],mv[10] ];
 	meshDrawer.draw( mvp, mv, nrmTrans );
-	if ( showBox.checked ) {
+	if ( showBox ) {
 		boxDrawer.draw( mvp, mv, nrmTrans );
 	}
 }
@@ -169,7 +169,7 @@ var showBox;  // boleano para determinar si se debe o no mostrar la caja
 // Al cargar la página
 window.onload = function() 
 {
-	showBox = document.getElementById('show-box');
+	showBox = true;
 	InitWebGL();
 	
 	// Componente para la luz
@@ -218,11 +218,18 @@ window.onload = function()
 		canvas.onmousemove = null;
 	}
 	
-	SetShininess( document.getElementById('shininess-exp') );
+	SetShininess();
 	
 	// Dibujo la escena
 	DrawScene();
 };
+
+function ResetBox() {
+	boxDrawer = new BoxDrawer();
+	SetShininess();
+	DrawScene();
+	lightView.updateLightDir();
+}
 
 // Evento resize
 function WindowResize()
@@ -325,11 +332,10 @@ function LoadTexture( param )
 }
 
 // Setear Intensidad
-function SetShininess( param )
+function SetShininess()
 {
-	var exp = param.value;
+	var exp = 50;
 	var s = Math.pow(10,exp/25);
-	document.getElementById('shininess-value').innerText = s.toFixed( s < 10 ? 2 : 0 );
 	meshDrawer.setShininess(s);
 	boxDrawer.setShininess(s);
 	DrawScene();
