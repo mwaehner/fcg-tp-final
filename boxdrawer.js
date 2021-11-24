@@ -147,8 +147,8 @@ var boxFS = `
 			Kd = vec4(vec3(0.2,0.5,0.3)*distance,1);
 		}
 		vec4 Ks = vec4(1.0, 1.0, 1.0, 1.0);
+		Kd = clamp(Kd, 0.0, 1.0);
 
-		// TODO (opcional): refraccion solo para nieve y agua
 		vec3 n = normalize(mn * normCoord);
 		vec3 l = normalize(light);
 		vec3 r = normalize(2.0 * dot(l, n) * n - l);
