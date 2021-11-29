@@ -1,6 +1,5 @@
 // Estructuras globales e inicializaciones
 var boxDrawer;          // clase para contener el comportamiento de la caja
-var meshDrawer;         // clase para contener el comportamiento de la malla
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
@@ -25,7 +24,6 @@ function InitWebGL()
 	
 	// Inicializar los shaders y buffers para renderizar	
 	boxDrawer  = new BoxDrawer();
-	meshDrawer = new MeshDrawer();
 	
 	// Setear el tamaño del viewport
 	UpdateCanvasSize();
@@ -91,7 +89,6 @@ function DrawScene()
 	
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	var nrmTrans = [ mv[0],mv[1],mv[2], mv[4],mv[5],mv[6], mv[8],mv[9],mv[10] ];
-	meshDrawer.draw( mvp, mv, nrmTrans );
 	if ( showBox ) {
 		boxDrawer.draw( mvp, mv, nrmTrans );
 	}
@@ -265,78 +262,11 @@ function AutoRotate( param )
 	}
 }
 
-// Control de textura visible
-function ShowTexture( param )
-{
-	meshDrawer.showTexture( param.checked );
-	DrawScene();
-}
-
-// Control de intercambiar y-z
-function SwapYZ( param )
-{
-	meshDrawer.swapYZ( param.checked );
-	DrawScene();
-}
-
-// Cargar archivo obj
-function LoadObj( param )
-{
-	if ( param.files && param.files[0] ) 
-	{
-		var reader = new FileReader();
-		reader.onload = function(e) 
-		{
-			var mesh = new ObjMesh;
-			mesh.parse( e.target.result );
-			var box = mesh.getBoundingBox();
-			var shift = [
-				-(box.min[0]+box.max[0])/2,
-				-(box.min[1]+box.max[1])/2,
-				-(box.min[2]+box.max[2])/2
-			];
-			var size = [
-				(box.max[0]-box.min[0])/2,
-				(box.max[1]-box.min[1])/2,
-				(box.max[2]-box.min[2])/2
-			];
-			var maxSize = Math.max( size[0], size[1], size[2] );
-			var scale = 1/maxSize;
-			mesh.shiftAndScale( shift, scale );
-			var buffers = mesh.getVertexBuffers();
-			meshDrawer.setMesh( buffers.positionBuffer, buffers.texCoordBuffer, buffers.normalBuffer );
-			DrawScene();
-		}
-		reader.readAsText( param.files[0] );
-	}
-}
-
-// Cargar textura
-function LoadTexture( param )
-{
-	if ( param.files && param.files[0] ) 
-	{
-		var reader = new FileReader();
-		reader.onload = function(e) 
-		{
-			var img = document.getElementById('texture-img');
-			img.onload = function() 
-			{
-				meshDrawer.setTexture( img );
-				DrawScene();
-			}
-			img.src = e.target.result;
-		};
-		reader.readAsDataURL( param.files[0] );
-	}
-}
-
 // Setear Intensidad
 function SetShininess()
 {
 	var exp = 50;
 	var s = Math.pow(10,exp/25);
-	meshDrawer.setShininess(s);
 	boxDrawer.setShininess(s);
 	DrawScene();
 }
