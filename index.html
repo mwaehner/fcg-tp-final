@@ -1,7 +1,7 @@
 <doctype html>
 <html>
 <head>
-<title> FCG 2021 - TP5</title>
+<title> FCG 2021 - Procedural Worlds</title>
 
 <!-- estilo-->
 <link href="style.css" rel="stylesheet">
@@ -9,9 +9,7 @@
 <script src="./node_modules/perlin-noise-3d/dist/perlin-noise-3d.min.js"></script>
 <script type="text/javascript" id="includedscript" src="geometries/sphericalcube.js"></script>
 <script type="text/javascript" id="includedscript" src="boxdrawer.js"></script>
-<script type="text/javascript" id="includedscript" src="lightview.js"></script>
 <script type="text/javascript" id="includedscript" src="project5.js"></script>
-<script type="text/javascript" id="includedscript" src="ejercicio.js"></script>
 <script type="text/javascript" src="objmesh.js"></script>
 
 </head>
@@ -20,11 +18,17 @@
     <div id="canvas-div"><canvas id="canvas"></canvas></div><div id="controls-div">
     <!-- menu y controles-->
     <div id="controls">
-        <div class="control-group"><canvas id="lightcontrol"></canvas><div id="lightcontrol-label">Dirección de la Luz</div></div>
+         <!--  <div class="control-group"><canvas id="lightcontrol"></canvas><div id="lightcontrol-label">Dirección de la Luz</div></div>-->
         <div class="control-group">
-            <div class="control"><input id="reset-box" name="reset-box" type="button" onclick="ResetBox()" value='Nuevo Mundo'/></div>
-            <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Calesita</label></div>
-            <div class="control"><input id="rotation-speed" type="range" min="1" max="100" value="50" disabled/></div>
+            
+              <!-- <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Calesita</label></div> -->
+            
+
+            <div class="control"><input id="world-size" name="world-size" type="range" min="32" max="256" value="128"/><label for="world-size"> World Size</label></div> 
+            <div class="control"><input id="rotation-speed" type="range" min="0" max="100" value="5"/><label for="rotation-speed">Rotational Speed</label></div> 
+            <div class="control"><input id="terrain-sharpness" type="range" min="2" max="10" value="8"/><label for="terrain-sharpness">Terrain Sharpness</label></div> 
+
+            <div class="control"><input id="reset-box" name="reset-box" type="button" onclick="ResetBox()" value='Make new world'/></div>
             
         </div>
     </div>

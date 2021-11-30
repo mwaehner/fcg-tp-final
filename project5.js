@@ -77,6 +77,35 @@ function UpdateProjectionMatrix()
 	perspectiveMatrix = ProjectionMatrix( canvas, transZ );
 }
 
+function GetModelViewMatrix( translationX, translationY, translationZ, rotationX, rotationY )
+{
+	var rotationXMatrix = [
+		1, 0, 0, 0,
+		0, Math.cos(rotationX), Math.sin(rotationX), 0,
+		0, -Math.sin(rotationX), Math.cos(rotationX), 0,
+		0, 0, 0, 1
+	]
+
+	var rotationYMatrix = [
+		Math.cos(rotationY), 0, -Math.sin(rotationY), 0,
+		0, 1, 0, 0,
+		Math.sin(rotationY), 0, Math.cos(rotationY), 0,
+		0, 0, 0, 1
+	]
+
+	// Matriz de traslación
+	var trans = [
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		translationX, translationY, translationZ, 1
+	];
+
+	var mv = MatrixMult(trans, MatrixMult( rotationXMatrix, rotationYMatrix ));
+	return mv;
+}
+
+
 // Funcion que reenderiza la escena. 
 function DrawScene()
 {
@@ -92,6 +121,12 @@ function DrawScene()
 	if ( showBox ) {
 		boxDrawer.draw( mvp, mv, nrmTrans );
 	}
+
+	var a = Math.cos( rotY + autorot + 900 );
+	var b = Math.sin( rotY + autorot + 900);
+	var c = Math.cos( rotX );
+	var d = Math.sin( rotX );
+	boxDrawer.setLightDir( -b, a*d, -a*c );
 }
 
 // Función que compila los shaders que se le pasan por parámetro (vertex & fragment shaders)
@@ -170,7 +205,7 @@ window.onload = function()
 	InitWebGL();
 	
 	// Componente para la luz
-	lightView = new LightView();
+	//lightView = new LightView();
 
 	// Evento de zoom (ruedita)
 	canvas.zoom = function( s ) 
@@ -205,6 +240,7 @@ window.onload = function()
 				cy = event.clientY;
 				UpdateProjectionMatrix();
 				DrawScene();
+
 			}
 		}
 	}
@@ -219,13 +255,18 @@ window.onload = function()
 	
 	// Dibujo la escena
 	DrawScene();
+	AutoRotate();
 };
 
 function ResetBox() {
-	boxDrawer = new BoxDrawer();
+	var worldSize = parseInt(document.getElementById('world-size').value);
+	var rotationSpeed = parseInt(document.getElementById('rotation-speed').value);
+	var terrainSharpness = parseInt(document.getElementById('terrain-sharpness').value);
+	boxDrawer = new BoxDrawer(worldSize, terrainSharpness);
 	SetShininess();
+	AutoRotate(rotationSpeed)
 	DrawScene();
-	lightView.updateLightDir();
+	//lightView.updateLightDir();
 }
 
 // Evento resize
@@ -237,29 +278,21 @@ function WindowResize()
 
 // Control de la calesita de rotación
 var timer;
-function AutoRotate( param )
+function AutoRotate(rotationSpeed=5)
 {
-	// Si hay que girar...
-	if ( param.checked ) 
-	{
-		// Vamos rotando una cantiad constante cada 30 ms
-		timer = setInterval( function() 
-		{
-				var v = document.getElementById('rotation-speed').value;
-				autorot += 0.0005 * v;
-				if ( autorot > 2*Math.PI ) autorot -= 2*Math.PI;
+	clearInterval( timer );
 
-				// Reenderizamos
-				DrawScene();
-			}, 30
-		);
-		document.getElementById('rotation-speed').disabled = false;
-	} 
-	else 
+	// Vamos rotando una cantiad constante cada 30 ms
+	timer = setInterval( function() 
 	{
-		clearInterval( timer );
-		document.getElementById('rotation-speed').disabled = true;
-	}
+			//var v = document.getElementById('rotation-speed').value;
+			autorot += 0.0005 * rotationSpeed;
+			if ( autorot > 2*Math.PI ) autorot -= 2*Math.PI;
+
+			// Reenderizamos
+			DrawScene();
+		}, 30
+	);
 }
 
 // Setear Intensidad

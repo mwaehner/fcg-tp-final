@@ -4,18 +4,16 @@
  */
 class SphericalCubeGeometry {
 
-    constructor(width = 1, height = 1, depth = 1, widthSegments = 128, heightSegments = 128, depthSegments = 128, toSphere=true){
-        let c = 256;
-        widthSegments = c;
-        heightSegments = c;
-        depthSegments = c;
+    constructor(segments = 128, fbmIters=10, toSphere=true){
+        console.log(segments, fbmIters,  toSphere);
         this.triangles = [];
         this.vertices = [];
-        this.normals = []; // TODO: calc normals
+        this.normals = [];
         this.numberOfVertices = 0;
         this.toSphere = toSphere;
+        this.fbmIters = fbmIters;
         this.noise = new perlinNoise3d();
-        this._build(width, height, depth, widthSegments, heightSegments, depthSegments);
+        this._build(1, 1, 1, segments, segments, segments);
         // TODO: (opcional) agregar nubes: crear otro conjunto de vertices de una esfera que tenga radio mayor a la esfera de acá arriba. Color: blanco / gris. Usar el 
         // ruido que ya generamos para modificar la transparencia.
     }
@@ -58,31 +56,6 @@ class SphericalCubeGeometry {
         this.normals.push(...n);
         this.normals.push(...n);
     }
-
-
-    /**
-     *     _calcNormals(){
-        let trianglesNumber = this.triangleList.length/3/3;
-        for(let i = 0; i<trianglesNumber; i+=9){
-            let p1, p2, p3;
-            p1 = [this.triangleList[i],this.triangleList[i+1], this.triangleList[i+2] ]
-            p2 = [this.triangleList[i+3],this.triangleList[i+3+1], this.triangleList[i+3+2] ]
-            p3 = [this.triangleList[i+6],this.triangleList[i+6+1], this.triangleList[i+6+2] ]
-            console.log(p1);
-            console.log(p2);
-            console.log(p3);
-
-            let u = p2.map((k, indexK) => (k-p1[indexK])) //p2-p1
-            let v = p3.map((k, indexK) => (k-p1[indexK])) //p3-p1
-            let nx = u[1]*v[2] - u[2]*v[1];
-            let ny = u[2]*v[0] - u[0]*v[2];
-            let nz = u[0]*v[1] - u[1]*v[0];
-            let n = this._normalized([nx,ny,nz])
-            this.normals.push(...n);
-        }
-        console.log(this.normals);
-    }
-     */
 
     _normalized(v){
         let length = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
@@ -155,7 +128,6 @@ class SphericalCubeGeometry {
                 // set values to correct vector component
                 const vector = this._buildVertex(u, x, udir, v, y, vdir, w, depthHalf);
                 let n = this._getPerlinNoise(vector);
-                //console.log(n);
 
                 // now apply vector to vertex buffer
                 vertices.push(vector['x']*n, vector['y']*n, vector['z']*n);
@@ -173,7 +145,7 @@ class SphericalCubeGeometry {
         b = vector['y'] + 1.0;
         c = vector['z'] + 1.0;
         let n = 0.0, a = 1.0, f = 1;
-        for (let o = 0; o < 10; o++) {
+        for (let o = 0; o < this.fbmIters; o++) {
             let v = a * this.noise.get(aa * f, b * f, c * f);
             n += v;
             a *= 0.5;
@@ -196,18 +168,6 @@ class SphericalCubeGeometry {
             vector[v] /= length;
             vector[w] /= length;
         }
-
-        //console.log(noise);
-/*         let n = 0.0, a = 1.0, f = 1;
-        for(let o = 0; o < 10; o++){
-            let v = a*Noise2D(this.numberOfVertices + x*f, this.numberOfVertices + y*f);
-            n += v;
-            
-            a *= 0.5;
-            f *= 2.0;
-        }
-        vector[w] += n*0.25; */
-
         return vector;
     }
 }

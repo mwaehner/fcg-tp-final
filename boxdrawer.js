@@ -1,12 +1,10 @@
 
 class BoxDrawer 
 {
-	constructor()
+	constructor(worldSize, terrainSharpness=8)
 	{
 		// 1. Compilamos el programa de shaders
 		this.prog = InitShaderProgram( boxVS, boxFS );
-		
-		
 		
 		// 2. Obtenemos los IDs de las variables uniformes en los shaders
 		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
@@ -24,7 +22,7 @@ class BoxDrawer
 		this.vertbuffer = gl.createBuffer();
 		this.normBuffer = gl.createBuffer();
 
-		var geometry = new SphericalCubeGeometry();
+		var geometry = new SphericalCubeGeometry(worldSize, terrainSharpness);
 
 		// 8 caras del cubo unitario
 		var triangleList = geometry.triangleList;
@@ -38,7 +36,7 @@ class BoxDrawer
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.normBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
 		gl.useProgram(this.prog );
-		var waterLevel = (Math.random() * 0.2) + 0.9;
+		var waterLevel = (Math.random() * 0.2) + 0.85;
 		gl.uniform1f( this.waterLevel, waterLevel);
 
 	}
@@ -147,7 +145,7 @@ var boxFS = `
 			Kd = vec4(vec3(0.2,0.5,0.3)*distance,1);
 		}
 		vec4 Ks = vec4(1.0, 1.0, 1.0, 1.0);
-		Kd = clamp(Kd, 0.0, 1.0);
+		Kd = clamp(Kd, 0.0, 1.0); // Saturamos entre 0 y 1 para evitar posibles errores.
 
 		vec3 n = normalize(mn * normCoord);
 		vec3 l = normalize(light);
