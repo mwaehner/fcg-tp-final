@@ -2,7 +2,7 @@
   "name": "fcg",
   "version": "1.0.0",
   "description": "dependencies",
-  "main": "boxdrawer.js",
+  "main": "worlddrawer.js",
   "dependencies": {
     "perlin-noise-3d": "^0.2.0"
   },

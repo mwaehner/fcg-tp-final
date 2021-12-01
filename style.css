@@ -61,6 +61,10 @@ input[type=range] {
 	text-align: right;
 	width: 4em;
 }
+.reset-world{
+	margin: 2em 0 2em 2em;
+	size: 150%;
+}
 @media (orientation: landscape) {
 	#canvas-div {
 		display: inline-block;

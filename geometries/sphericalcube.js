@@ -4,21 +4,21 @@
  */
 class SphericalCubeGeometry {
 
-    constructor(segments = 128, fbmIters=10, toSphere=true){
-        console.log(segments, fbmIters,  toSphere);
+    constructor(segments = 128, fbmIters=10, terrainIrregularity=0.5, toSphere=true ){
         this.triangles = [];
         this.vertices = [];
         this.normals = [];
         this.numberOfVertices = 0;
         this.toSphere = toSphere;
         this.fbmIters = fbmIters;
+        this.terrainIrregularity = terrainIrregularity;
         this.noise = new perlinNoise3d();
         this._build(1, 1, 1, segments, segments, segments);
         // TODO: (opcional) agregar nubes: crear otro conjunto de vertices de una esfera que tenga radio mayor a la esfera de acá arriba. Color: blanco / gris. Usar el 
         // ruido que ya generamos para modificar la transparencia.
     }
 
-    /** Interface */
+    /** Interfaz */
 
     get triangleList(){
         return this.triangles;
@@ -32,17 +32,16 @@ class SphericalCubeGeometry {
         return this.normals;
     }
 
-    /** Private methods */
+    /** Métodos privados */
 
     _build(width, height, depth, widthSegments, heightSegments, depthSegments){
-        // build each side of the box geometry
+        // construimos cada cara de la geometria
         this._buildPlane( 'z', 'y', 'x', - 1, - 1, depth, height, width, depthSegments, heightSegments ); // px
         this._buildPlane( 'z', 'y', 'x', 1, - 1, depth, height, - width, depthSegments, heightSegments ); // nx
         this._buildPlane( 'x', 'z', 'y', 1, 1, width, depth, height, widthSegments, depthSegments ); // py
         this._buildPlane( 'x', 'z', 'y', 1, - 1, width, depth, - height, widthSegments, depthSegments ); // ny
         this._buildPlane( 'x', 'y', 'z', 1, - 1, width, height, depth, widthSegments, heightSegments ); // pz
         this._buildPlane( 'x', 'y', 'z', - 1, - 1, width, height, - depth, widthSegments, heightSegments ); // nz
-        //this._calcNormals();
     }
 
     _calcNormals(p1,p2,p3){
@@ -65,7 +64,7 @@ class SphericalCubeGeometry {
     _buildPlane( u, v, w, udir, vdir, width, height, depth, gridX, gridY) {
         let verticesAdded = this._buildVertexList(gridX, gridY, width, height, depth, u, udir, v, vdir, w);
         this._buildTriangleList(gridX, gridY);
-        // update total number of vertices
+        // actualizamos cantidad total de vertices
         this.numberOfVertices += verticesAdded;
     }
 
@@ -80,8 +79,6 @@ class SphericalCubeGeometry {
                 const b = (numberOfVertices + ix + gridX1 * (iy + 1)) * 3;
                 const c = (numberOfVertices + (ix + 1) + gridX1 * (iy + 1)) * 3;
                 const d = (numberOfVertices + (ix + 1) + gridX1 * iy) * 3;
-
-                // faces
                 
                 this.triangles.push(
                     vertices[a], vertices[a + 1], vertices[a + 2], //p1
@@ -114,7 +111,7 @@ class SphericalCubeGeometry {
         let vertexCounter = 0;
         const vertices = this.vertices;
 
-        // generate vertices
+        // generamos vertices
         const segmentWidth = width / gridX;
         const segmentHeight = height / gridY;
         const widthHalf = width / 2;
@@ -125,20 +122,27 @@ class SphericalCubeGeometry {
             for (let ix = 0; ix < gridX1; ix++) {
                 const x = ix * segmentWidth - widthHalf;
 
-                // set values to correct vector component
+                // construimos el vector del vertice
                 const vector = this._buildVertex(u, x, udir, v, y, vdir, w, depthHalf);
                 let n = this._getPerlinNoise(vector);
+                let distanceToOne = Math.abs(1.0-n);
+                let noiseScaling = 1.5 - this.terrainIrregularity; // 0.75 a 1.5
+                
+                n = n < 1 ? (1 - distanceToOne/noiseScaling) : (1 + distanceToOne/noiseScaling);
 
-                // now apply vector to vertex buffer
+                // pusheamos a la lista de vertices, multiplicando cada componente por el ruido
                 vertices.push(vector['x']*n, vector['y']*n, vector['z']*n);
 
-                // counters
                 vertexCounter += 1;
             }
         }
         return vertexCounter;
     }
 
+    /** 
+     * Obtiene el ruido de perlin y aplica Fractal Brownian Motion para darle un aspecto más realista al terreno.
+     * https://en.wikipedia.org/wiki/Fractional_Brownian_motion
+     */
     _getPerlinNoise(vector) {
         let aa, b, c;
         aa = vector['x'] + 1.0;
@@ -162,7 +166,7 @@ class SphericalCubeGeometry {
         vector[w] = depthHalf;
         
         if(this.toSphere){
-            /** Normalize */
+            /** Normalizamos */
             let length = Math.sqrt(vector[u] * vector[u] + vector[v] * vector[v] + vector[w] * vector[w]);
             vector[u] /= length;
             vector[v] /= length;

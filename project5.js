@@ -1,5 +1,5 @@
 // Estructuras globales e inicializaciones
-var boxDrawer;          // clase para contener el comportamiento de la caja
+var worldDrawer;          // clase para contener el comportamiento de la caja
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
@@ -23,7 +23,7 @@ function InitWebGL()
 	gl.enable(gl.DEPTH_TEST); // habilitar test de profundidad 
 	
 	// Inicializar los shaders y buffers para renderizar	
-	boxDrawer  = new BoxDrawer();
+	worldDrawer  = new WorldDrawer();
 	
 	// Setear el tamaño del viewport
 	UpdateCanvasSize();
@@ -119,14 +119,14 @@ function DrawScene()
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	var nrmTrans = [ mv[0],mv[1],mv[2], mv[4],mv[5],mv[6], mv[8],mv[9],mv[10] ];
 	if ( showBox ) {
-		boxDrawer.draw( mvp, mv, nrmTrans );
+		worldDrawer.draw( mvp, mv, nrmTrans );
 	}
 
 	var a = Math.cos( rotY + autorot + 900 );
 	var b = Math.sin( rotY + autorot + 900);
 	var c = Math.cos( rotX );
 	var d = Math.sin( rotX );
-	boxDrawer.setLightDir( -b, a*d, -a*c );
+	worldDrawer.setLightDir( -b, a*d, -a*c );
 }
 
 // Función que compila los shaders que se le pasan por parámetro (vertex & fragment shaders)
@@ -259,14 +259,12 @@ window.onload = function()
 };
 
 function ResetBox() {
-	var worldSize = parseInt(document.getElementById('world-size').value);
-	var rotationSpeed = parseInt(document.getElementById('rotation-speed').value);
-	var terrainSharpness = parseInt(document.getElementById('terrain-sharpness').value);
-	boxDrawer = new BoxDrawer(worldSize, terrainSharpness);
+	let worldSize = parseInt(document.getElementById('world-size').value);
+	let terrainSharpness = parseInt(document.getElementById('terrain-sharpness').value);
+	let terrainIrregularity = parseFloat(document.getElementById('terrain-irregularity').value);
+	worldDrawer = new WorldDrawer(worldSize, terrainSharpness, terrainIrregularity);
 	SetShininess();
-	AutoRotate(rotationSpeed)
 	DrawScene();
-	//lightView.updateLightDir();
 }
 
 // Evento resize
@@ -278,8 +276,9 @@ function WindowResize()
 
 // Control de la calesita de rotación
 var timer;
-function AutoRotate(rotationSpeed=5)
+function AutoRotate()
 {
+	let rotationSpeed = parseInt(document.getElementById('rotation-speed').value) ?? 5;
 	clearInterval( timer );
 
 	// Vamos rotando una cantiad constante cada 30 ms
@@ -300,7 +299,6 @@ function SetShininess()
 {
 	var exp = 50;
 	var s = Math.pow(10,exp/25);
-	boxDrawer.setShininess(s);
-	DrawScene();
+	worldDrawer.setShininess(s);
 }
 
