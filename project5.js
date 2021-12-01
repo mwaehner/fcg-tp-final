@@ -1,5 +1,5 @@
 // Estructuras globales e inicializaciones
-var worldDrawer;          // clase para contener el comportamiento de la caja
+var worldDrawer;          // clase para contener el comportamiento del mundo
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
@@ -118,9 +118,9 @@ function DrawScene()
 	
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	var nrmTrans = [ mv[0],mv[1],mv[2], mv[4],mv[5],mv[6], mv[8],mv[9],mv[10] ];
-	if ( showBox ) {
-		worldDrawer.draw( mvp, mv, nrmTrans );
-	}
+	
+	worldDrawer.draw( mvp, mv, nrmTrans );
+	
 
 	var a = Math.cos( rotY + autorot + 900 );
 	var b = Math.sin( rotY + autorot + 900);
@@ -196,16 +196,10 @@ function MatrixMult( A, B )
 
 // ======== Funciones para el control de la interfaz ========
 
-var showBox;  // boleano para determinar si se debe o no mostrar la caja
-
 // Al cargar la página
 window.onload = function() 
 {
-	showBox = true;
 	InitWebGL();
-	
-	// Componente para la luz
-	//lightView = new LightView();
 
 	// Evento de zoom (ruedita)
 	canvas.zoom = function( s ) 
